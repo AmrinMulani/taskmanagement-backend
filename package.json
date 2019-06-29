@@ -1,0 +1,32 @@
+{
+  "name": "todobackened-app",
+  "version": "1.0.0",
+  "description": "todo List of backend ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Amrin",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.4",
+    "express": "^4.16.4",
+    "express-session": "^1.16.1",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.25",
+    "mongoose": "^5.5.7",
+    "morgan": "^1.9.1",
+    "nodemailer": "^6.2.1",
+    "pino": "^5.12.3",
+    "redis": "^2.8.0",
+    "shortid": "^2.2.14",
+    "socket.io": "^2.2.0",
+    "title-case": "^2.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  }
+}
