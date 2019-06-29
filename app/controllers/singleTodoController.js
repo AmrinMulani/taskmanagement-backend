@@ -39,11 +39,11 @@ let createTodoList = (req, res) => {
       ListModel.findOne({ title: req.body.title.trim(), createdBy: req.body.createdBy }).exec(
         (err, listToDo) => {
           if (err) {
-            logger.error(err.message, "singleTodoController: createTodoList()", 10);
+            logger.error(err.message, "singleTodoController: saveToDoList()", 10);
             let apiResponse = response.generate(true, "Failed to create todo " + err, 400, null);
             reject(apiResponse);
           } else if (!check.isEmpty(listToDo)) {
-            logger.error("Title already exist", "singleTodoController: createTodoList()", 7);
+            logger.error("Title already exist", "singleTodoController: saveToDoList()", 7);
             let apiResponse = response.generate(true, "Title already exists", 400, null);
             reject(apiResponse);
           } else {
@@ -57,7 +57,7 @@ let createTodoList = (req, res) => {
 
             listObject.save((err, generatedToDo) => {
               if (err) {
-                logger.error(err.message, "singleTodoController: createTodoList()", 10);
+                logger.error(err.message, "singleTodoController: saveToDoList()", 10);
                 let apiResponse = response.generate(true, "Unable to create new todo List", 400, null);
                 reject(apiResponse);
               } else {
@@ -161,14 +161,14 @@ let editTodoList = (req, res) => {
     return new Promise((resolve, reject) => {
       if (!check.isEmpty(req.body.title)) {
         if (check.isEmpty(req.body.createdBy)) {
-          logger.error("createdBy field is missing in the request", "singleTodoController: createTodoList()", 10);
+          logger.error("createdBy field is missing in the request", "singleTodoController: editTodoList()", 10);
           let apiResponse = response.generate(true, "createdBy field is required", 400, null);
           reject(apiResponse);
         } else {
           resolve(req);
         }
       } else {
-        logger.error("Title of list is missing in the request", "singleTodoController: createTodoList()", 10);
+        logger.error("Title of list is missing in the request", "singleTodoController: editTodoList()", 10);
         let apiResponse = response.generate(true, "title of list is required", 400, null);
         reject(apiResponse);
       }
@@ -183,7 +183,7 @@ let editTodoList = (req, res) => {
 
           if (err) {
             //console.log(err)
-            logger.error(err.message, "singleTodoController: createTodoList()", 10);
+            logger.error(err.message, "singleTodoController: saveToDoList()", 10);
             let apiResponse = response.generate(true, "Unable to update   todo List", 400, null);
             reject(apiResponse);
           } else {
@@ -214,14 +214,14 @@ let createItemTodo = (req, res) => {
     return new Promise((resolve, reject) => {
       if (!check.isEmpty(req.body.listId)) {
         if (check.isEmpty(req.body.createdBy)) {
-          logger.error("createdBy field is missing in the request", "toDoParentController: addToDoParentFunction()", 10);
+          logger.error("createdBy field is missing in the request", "singleTodoController: createItemTodo()", 10);
           let apiResponse = response.generate(true, "createdBy is required", 400, null);
           reject(apiResponse);
         } else {
           resolve(req);
         }
       } else {
-        logger.error("Title is missing in the request", "toDoParentController: addToDoParentFunction()", 10);
+        logger.error("Title is missing in the request", "singleTodoController: createItemTodo()", 10);
         let apiResponse = response.generate(true, "list id is required", 400, null);
         reject(apiResponse);
       }
@@ -234,17 +234,17 @@ let createItemTodo = (req, res) => {
       TaskModel.findOne({ title: req.body.title.trim() }).exec(
         (err, parentToDo) => {
           if (err) {
-            logger.error(err.message, "toDoParentController: saveToDoParent()", 10);
+            logger.error(err.message, "singleTodoController: saveToDoParent()", 10);
             let apiResponse = response.generate(true, "Failed to create todo", 400, null);
             reject(apiResponse);
           } else if (!check.isEmpty(parentToDo)) {
-            logger.error("Title already exist", "toDoParentController: saveToDoParent()", 7);
+            logger.error("Title already exist", "singleTodoController: saveToDoParent()", 7);
             let apiResponse = response.generate(true, "Title already exists", 400, null);
             reject(apiResponse);
           } else {
             ListModel.findOne({ listId: req.body.listId }).exec((err, result) => {
               if (err) {
-                logger.error(err.message, "toDoParentController: sveNewFunction()", 10);
+                logger.error(err.message, "singleTodoController: saveToDoParent()", 10);
                 let apiResponse = response.generate(true, "Failed to create todo", 400, null);
                 reject(apiResponse);
               } else if (!check.isEmpty(result)) {
@@ -261,7 +261,7 @@ let createItemTodo = (req, res) => {
                 taskObj.save((err, generatedToDo) => {
                   if (err) {
                     //console.log(err)
-                    logger.error(err.message, "toDoParentController: saveNewFunction()", 10);
+                    logger.error(err.message, "singleTodoController: saveToDoParent()", 10);
                     let apiResponse = response.generate(true, "Unable to create new todo item", 400, null);
                     reject(apiResponse);
                   } else {
@@ -306,52 +306,6 @@ let createItemTodo = (req, res) => {
     });
 }; //end of saveitemNew Function
 
-//ye h na/* ? ye task return kar raha hia  iisi pe to work krna hai kaMAINE KYA kiya maine ek simple wali query chali ha to get the details 
-//aand for */
-let getToDoItemList = (req, res) => {
-  console.log(req.query.listId)
-  let validateInput = () => {
-    return new Promise((resolve, reject) => {
-      if (check.isEmpty(req.query.listId)) {
-        logger.info("parameters missing", "toDoItemController: validateInput()", 9); let apiResponse = response.generate(true, "ToDoParentId parameters is missing.", 403, null);
-        reject(apiResponse);
-      } else {
-        resolve(req);
-      }
-    });
-  }; //end of validateInput function
-
-  let getAllItemList = () => {
-    return new Promise((resolve, reject) => {
-      ToDoListModel.findOne({ listId: req.query.listId })
-        .populate("itemTodo")
-        .exec(function (err, story) {
-          if (err) {
-            logger.error(err.message, "toDoItemController: getAllItemList()", 10);
-            let apiResponse = response.generate(true, "Unable to fetch todo item list", 500, null);
-            reject(apiResponse);
-          }
-          resolve(story);
-        });
-    });
-  }; //end of getAllItemList
-
-  /*
-      Function Calls
-  */
-  validateInput(req, res)
-    .then(getAllItemList)
-    .then(resolve => {
-      let apiResponse = response.generate(false, "ToDo items fetched successfully", 200, resolve);
-      res.status(200);
-      res.send(apiResponse);
-    })
-    .catch(err => {
-      //console.log(err)
-      res.status(err.status);
-      res.send(err);
-    });
-}; //end of getToDoItemListFunction
 
 //task list
 let getToDoItemListId = (req, res) => {
@@ -360,7 +314,7 @@ let getToDoItemListId = (req, res) => {
   let validateParameters = () => {
     return new Promise((resolve, reject) => {
       if (check.isEmpty(req.params.listId)) {
-        logger.error('parentId is missing in the request', 'toDoParentController: getToDoListByParentIdFunction=>validateParameters()', 10);
+        logger.error('parentId is missing in the request', 'singleTodoController: getToDoItemListId()', 10);
         let apiResponse = response.generate(true, 'parentId is required', 400, null);
         reject(apiResponse);
       } else {
@@ -369,11 +323,11 @@ let getToDoItemListId = (req, res) => {
           .lean()
           .exec((err, result) => {
             if (err) {
-              logger.error(err.message, 'toDoParentController: getToDoListByParentIdFunction=>validateParameters()', 10);
+              logger.error(err.message, 'singleTodoController: getToDoItemListId()', 10);
               let apiResponse = response.generate(true, 'Failed to fetch todo parent data ' + err, 400, null);
               reject(apiResponse);
             } else if (check.isEmpty(result)) {
-              logger.error('Failed to find parent details', 'toDoParentController: getToDoListByParentIdFunction=>validateParameters()', 10);
+              logger.error('Failed to find parent details', 'singleTodoController: getToDoItemListId()', 10);
               let apiResponse = response.generate(true, 'Failed to find parent details, Check parent id', 400, null);
               reject(apiResponse);
             } else {
@@ -404,14 +358,14 @@ let createSubItem = (req, res) => {
     return new Promise((resolve, reject) => {
       if (!check.isEmpty(req.body.listId)) {
         if (check.isEmpty(req.body.createdBy)) {
-          logger.error("createdBy field is missing in the request", "toDoParentController: addToDoParentFunction()", 10);
+          logger.error("createdBy field is missing in the request", "singleTodoController: createSubItem()", 10);
           let apiResponse = response.generate(true, "createdBy is required", 400, null);
           reject(apiResponse);
         } else {
           resolve(req);
         }
       } else {
-        logger.error("Title is missing in the request", "toDoParentController: addToDoParentFunction()", 10);
+        logger.error("Title is missing in the request", "singleTodoController: createSubItem()", 10);
         let apiResponse = response.generate(true, "list id is required", 400, null);
         reject(apiResponse);
       }
@@ -424,11 +378,11 @@ let createSubItem = (req, res) => {
       SubTaskModel.findOne({ title: req.body.title.trim() }).exec(
         (err, parentToDo) => {
           if (err) {
-            logger.error(err.message, "toDoParentController: saveToDoParent()", 10);
+            logger.error(err.message, "singleTodoController: saveToDoParent()", 10);
             let apiResponse = response.generate(true, "Failed to create todo", 400, null);
             reject(apiResponse);
           } else if (!check.isEmpty(parentToDo)) {
-            logger.error("Title already exist", "toDoParentController: saveToDoParent()", 7);
+            logger.error("Title already exist", "singleTodoController: saveToDoParent()", 7);
             let apiResponse = response.generate(true, "Title already exists", 400, null);
             reject(apiResponse);
           } else {
@@ -437,7 +391,7 @@ let createSubItem = (req, res) => {
             }).exec((err, result) => {
               console.log("I am result" + result)
               if (err) {
-                logger.error(err.message, "toDoParentController: sveNewFunction()", 10);
+                logger.error(err.message, "singleTodoController: saveToDoParent()", 10);
                 let apiResponse = response.generate(true, "Failed to create todo", 400, null);
                 reject(apiResponse);
               } else if (!check.isEmpty(result)) {
@@ -454,7 +408,7 @@ let createSubItem = (req, res) => {
                 subTaskObj.save((err, generatedToDo) => {
                   if (err) {
                     console.log(err)
-                    logger.error(err.message, "toDoParentController: saveNewFunction()", 10);
+                    logger.error(err.message, "singleTodoController: saveToDoParent()", 10);
                     let apiResponse = response.generate(true, "Unable to create new sub todo item", 400, null);
                     reject(apiResponse);
                   } else {
@@ -503,14 +457,14 @@ let updateTaskToDo = (req, res) => {
     return new Promise((resolve, reject) => {
       if (!check.isEmpty(req.body.title)) {
         if (check.isEmpty(req.body.createdBy)) {
-          logger.error("createdBy field is missing in the request", "singleTodoController: createTodoList()", 10);
+          logger.error("createdBy field is missing in the request", "singleTodoController: updateTaskToDo()", 10);
           let apiResponse = response.generate(true, "createdBy field is required", 400, null);
           reject(apiResponse);
         } else {
           resolve(req);
         }
       } else {
-        logger.error("Title of list is missing in the request", "singleTodoController: createTodoList()", 10);
+        logger.error("Title of list is missing in the request", "singleTodoController: updateTaskToDo()", 10);
         let apiResponse = response.generate(true, "title of list is required", 400, null);
         reject(apiResponse);
       }
@@ -521,7 +475,7 @@ let updateTaskToDo = (req, res) => {
       TaskModel.update({ "listId": req.body.listId, "taskId": req.body.taskId }, options, { multi: true }
         , function (err, generatedToDo) {
           if (err) {
-            logger.error(err.message, "singleTodoController: createTodoList()", 10);
+            logger.error(err.message, "singleTodoController: saveToDoList()", 10);
             let apiResponse = response.generate(true, "Unable to update   todo List", 400, null);
             reject(apiResponse);
           } else {
@@ -553,14 +507,14 @@ let updateSubItemToDo = (req, res) => {
     return new Promise((resolve, reject) => {
       if (!check.isEmpty(req.body.title)) {
         if (check.isEmpty(req.body.createdBy)) {
-          logger.error("createdBy field is missing in the request", "singleTodoController: createTodoList()", 10);
+          logger.error("createdBy field is missing in the request", "singleTodoController: updateSubItemToDo()", 10);
           let apiResponse = response.generate(true, "createdBy field is required", 400, null);
           reject(apiResponse);
         } else {
           resolve(req);
         }
       } else {
-        logger.error("Title of list is missing in the request", "singleTodoController: createTodoList()", 10);
+        logger.error("Title of list is missing in the request", "singleTodoController: updateSubItemToDo()", 10);
         let apiResponse = response.generate(true, "title of list is required", 400, null);
         reject(apiResponse);
       }
@@ -571,11 +525,11 @@ let updateSubItemToDo = (req, res) => {
       ListModel.findOne({ title: req.body.title.trim() }).exec(
         (err, listToDo) => {
           if (err) {
-            logger.error(err.message, "singleTodoController: createTodoList()", 10);
+            logger.error(err.message, "singleTodoController: saveToDoList()", 10);
             let apiResponse = response.generate(true, "Failed to create todo " + err, 400, null);
             reject(apiResponse);
           } else if (!check.isEmpty(listToDo)) {
-            logger.error("Title already exist", "singleTodoController: createTodoList()", 7);
+            logger.error("Title already exist", "singleTodoController: saveToDoList()", 7);
             let apiResponse = response.generate(true, "Title already exists", 400, null);
             reject(apiResponse);
           } else {
@@ -585,7 +539,7 @@ let updateSubItemToDo = (req, res) => {
 
                 if (err) {
                   //console.log(err)
-                  logger.error(err.message, "singleTodoController: createTodoList()", 10);
+                  logger.error(err.message, "singleTodoController: saveToDoList()", 10);
                   let apiResponse = response.generate(true, "Unable to update sub List", 400, null);
                   reject(apiResponse);
                 } else {
@@ -617,7 +571,7 @@ let getSubItemByParentId = (req, res) => {
   let validateParameters = () => {
     return new Promise((resolve, reject) => {
       if (check.isEmpty(req.params.taskId)) {
-        logger.error('parentId is missing in the request', 'toDoParentController: getToDoListByParentIdFunction=>validateParameters()', 10);
+        logger.error('parentId is missing in the request', 'singleTodoController: getSubItemByParentId', 10);
         let apiResponse = response.generate(true, 'parentId is required', 400, null);
         reject(apiResponse);
       } else {
@@ -627,11 +581,11 @@ let getSubItemByParentId = (req, res) => {
           .lean()
           .exec((err, result) => {
             if (err) {
-              logger.error(err.message, 'toDoParentController: getToDoListByParentIdFunction=>validateParameters()', 10);
+              logger.error(err.message, 'singleTodoController: getSubItemByParentId', 10);
               let apiResponse = response.generate(true, 'Failed to fetch todo parent data ' + err, 400, null);
               reject(apiResponse);
             } else if (check.isEmpty(result)) {
-              logger.error('Failed to find parent details', 'toDoParentController: getToDoListByParentIdFunction=>validateParameters()', 10);
+              logger.error('Failed to find parent details', 'singleTodoController: getSubItemByParentId', 10);
               let apiResponse = response.generate(true, 'Failed to find parent details, Check parent id', 400, null);
               reject(apiResponse);
             } else {
@@ -744,7 +698,7 @@ let findList = (req, res) => {
   let validateParameters = () => {
     return new Promise((resolve, reject) => {
       if (check.isEmpty(req.params.listId)) {
-        logger.error('parentId is missing in the request', 'toDoParentController: getToDoListByParentIdFunction=>validateParameters()', 10);
+        logger.error('parentId is missing in the request', 'singleTodoController: findList', 10);
         let apiResponse = response.generate(true, 'parentId is required', 400, null);
         reject(apiResponse);
       } else {
@@ -752,11 +706,11 @@ let findList = (req, res) => {
           .lean()
           .exec((err, result) => {
             if (err) {
-              logger.error(err.message, 'toDoParentController: getToDoListByParentIdFunction=>validateParameters()', 10);
+              logger.error(err.message, 'singleTodoController: findList', 10);
               let apiResponse = response.generate(true, 'Failed to fetch todo parent data ' + err, 400, null);
               reject(apiResponse);
             } else if (check.isEmpty(result)) {
-              logger.error('Failed to find parent details', 'toDoParentController: getToDoListByParentIdFunction=>validateParameters()', 10);
+              logger.error('Failed to find parent details', 'singleTodoController: findList', 10);
               let apiResponse = response.generate(true, 'Failed to find parent details, Check parent id', 400, null);
               reject(apiResponse);
             } else {
@@ -855,7 +809,7 @@ module.exports = {
   deleteTodoList: deleteTodoList,
   editTodoList: editTodoList,
   createItemTodo: createItemTodo,
-  getToDoItemList: getToDoItemList,
+
   getToDoItemListId: getToDoItemListId,
   createSubItem: createSubItem,
   updateSubItemToDo: updateSubItemToDo,
@@ -866,4 +820,7 @@ module.exports = {
   findList: findList
   // completeList: completeListFunction
 
+
 };
+
+

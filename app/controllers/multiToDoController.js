@@ -23,12 +23,12 @@ let createTodoFunction = (req, res) => {
                 if (!check.isEmpty(req.body.createdBy)) {
                     resolve(req);
                 } else {
-                    logger.error('crated By is required', 'multiToDoController: addToDoItemFunction()', 10);
+                    logger.error('crated By is required', 'multiToDoController: validateInput()', 10);
                     let apiResponse = response.generate(true, 'Created By', 400, null);
                     reject(apiResponse);
                 }
             } else {
-                logger.error('title is required', 'multiToDoController: addToDoItemFunction()', 10);
+                logger.error('title is required', 'multiToDoController: validateInput()', 10);
                 let apiResponse = response.generate(true, 'Todo item title is missing in the request', 400, null);
                 reject(apiResponse);
             }
@@ -42,11 +42,11 @@ let createTodoFunction = (req, res) => {
             MultiToDoModel.findOne({ title: req.body.title.trim(), createdBy: req.body.createdBy })
                 .exec((err, result) => {
                     if (err) {
-                        logger.error(err.message, 'multiToDoController: saveToDoItem()', 10);
+                        logger.error(err.message, 'multiToDoController: saveToDo()', 10);
                         let apiResponse = response.generate(true, err.message, 400, null);
                         reject(apiResponse);
                     } else if (!check.isEmpty(result)) {
-                        logger.error('to do title already exist', 'multiToDoController: saveToDoItem()', 7);
+                        logger.error('to do title already exist', 'multiToDoController: saveToDo()', 7);
                         let apiResponse = response.generate(true, 'Todo item already exists', 400, null);
                         reject(apiResponse);
                     } else {
@@ -60,8 +60,8 @@ let createTodoFunction = (req, res) => {
                         todoObj.save((err, generatedToDoItem) => {
                             if (err) {
                                 //console.log(err)
-                                logger.error(err.message, 'multiToDoController: saveToDoItem()', 10);
-                                let apiResponse = response.generate(true, 'Unable to create new todo parent', 400, null);
+                                logger.error(err.message, 'multiToDoController: saveToDo()', 10);
+                                let apiResponse = response.generate(true, 'Unable to create new todo', 400, null);
                                 reject(apiResponse);
                             } else {
                                 let generatedToDoItemObject = generatedToDoItem.toObject();
@@ -169,17 +169,17 @@ let editToDoFunction = (req, res) => {
                     if (!check.isEmpty(req.body.editBy)) {
                         resolve(req);
                     } else {
-                        logger.error('editBy is missing or null', 'multiToDoController: editToDoItemTitleFunction() =>validateInput', 10);
+                        logger.error('editBy is missing or null', 'multiToDoController: validateInput', 10);
                         let apiResponse = response.generate(true, 'editBy is missing or null in the request', 400, null);
                         reject(apiResponse);
                     }
                 } else {
-                    logger.error('title is missing or null', 'multiToDoController: editToDoItemTitleFunction() =>validateInput', 10);
+                    logger.error('title is missing or null', 'multiToDoController:validateInput', 10);
                     let apiResponse = response.generate(true, 'title is missing or null in the request', 400, null);
                     reject(apiResponse);
                 }
             } else {
-                logger.error('id is required', 'multiToDoController: editToDoItemTitleFunction()=>validateInput', 10);
+                logger.error('Multi id is required', 'multiToDoController: validateInput', 10);
                 let apiResponse = response.generate(true, 'id is missing in the request', 400, null);
                 reject(apiResponse);
             }
@@ -190,7 +190,7 @@ let editToDoFunction = (req, res) => {
             var query = { multiToDoId: req.body.multiToDoId }
             MultiToDoModel.findOneAndUpdate(query, { title: req.body.title }, (err, result) => {
                 if (err) {
-                    logger.error(err.message, 'multiToDoController: editToDoItemTitleFunction()=>findAndUpdateData', 10);
+                    logger.error(err.message, 'multiToDoController:findAndUpdateData', 10);
                     let apiResponse = response.generate(true, 'erro while getting data- ' + err.message, 400, null);
                     reject(apiResponse);
                 } else {
@@ -217,7 +217,7 @@ let editToDoFunction = (req, res) => {
             });
             data.save((err, result) => {
                 if (err) {
-                    logger.error(err.message, 'multiToDoController: editToDoItemTitleFunction() =>insertData', 10);
+                    logger.error(err.message, 'multiToDoController:nsertTodoTrans', 10);
                     let apiResponse = response.generate(true, 'Unable to save transaction', 400, null);
                     reject(apiResponse);
                 } else {
@@ -313,7 +313,7 @@ let getToDoTransactionById = (req, res) => {
                     .limit(5)
                     .exec((err, data) => {
                         if (err) {
-                            logger.error(err.message, 'multiToDoController: getToDoTransactionById()', 10);
+                            logger.error(err.message, 'multiToDoController: getAllItems()', 10);
                             let apiResponse = response.generate(true, 'error while getting data- ' + err.message, 400, null);
                             reject(apiResponse);
                         } else {
@@ -355,12 +355,12 @@ let undoTodo = (req, res) => {
                 if (!check.isEmpty(req.params.multitrnId)) {
                     resolve(req)
                 } else {
-                    logger.error('transaction id is missing or null', 'multiToDoController: undo History =>validateInput', 10);
+                    logger.error('transaction id is missing or null', 'multiToDoController:validateInput', 10);
                     let apiResponse = response.generate(true, 'transaction id is missing or null in the request', 404, null);
                     reject(apiResponse);
                 }
             } else {
-                logger.error('mutlitodo id is required', 'multiToDoController: editMultitodo()=>validateInput', 10);
+                logger.error('mutlitodo id is required', 'multiToDoController: validateInput', 10);
                 let apiResponse = response.generate(true, 'multi todo  id is missing in the request', 404, null);
                 reject(apiResponse);
             }
@@ -379,7 +379,7 @@ let undoTodo = (req, res) => {
                 (err, lastTransac) => {
                     console.log(lastTransac)
                     if (err) {
-                        logger.error(`error finding multitodo transaction ${err}`, `multiTodo.js=>undoHistory-findTransaction`, 10)
+                        logger.error(`error finding multitodo transaction ${err}`, `findTransaction`, 10)
                         let apiResponse = response.generate(true, `Error getting multi-todo transaction`, 500, null)
                         reject(apiResponse)
                     } else {
@@ -408,7 +408,7 @@ let undoTodo = (req, res) => {
                         console.log(updatedMultiTodo)
 
                         if (err) {
-                            logger.error(`Error updating multitodo title ${err}`, `multiTodo.js-undoHistory-multiTodoUndo`, 10)
+                            logger.error(`Error updating multitodo title ${err}`, `multiTodoController:multiTodoUndo`, 10)
                             let apiResponse = response.generate(true, `Error updating multi current todo title to previous title`, 500, 10)
                             reject(apiResponse)
                         } else {
@@ -422,7 +422,7 @@ let undoTodo = (req, res) => {
 
     //function to delete last transaction
     let deleteLastTransaction = () => {
-        console.log('\n\n\ninside delete')
+
         return new Promise((resolve, reject) => {
             MultiTrnModel.findOneAndDelete({
                 'multiTodoId': req.params.multiTodoId,
@@ -447,7 +447,7 @@ let undoTodo = (req, res) => {
         .then(multiTodoUndo)
         .then(deleteLastTransaction)
         .then((resolve) => {
-            logger.info(`Undo task success`, `multiTodo.js=>undoHistory()`, 10)
+            logger.info(`Undo task success`, `undoHistory()`, 10)
             let apiResponse = response.generate(false, `Undo/Revert Successfully done`, 200, resolve)
             res.status(200)
             res.send(apiResponse)
@@ -465,7 +465,7 @@ let completeToDoFunction = (req, res) => {
             if (!check.isEmpty(req.body.multiToDoId)) {
                 resolve(req);
             } else {
-                logger.error('multiToDo ID  is missing or null', 'multiToDoController: editToDoItemTitleFunction() =>validateInput', 10);
+                logger.error('multiToDo ID  is missing or null', 'multiToDoController: validateInput', 10);
                 let apiResponse = response.generate(true, 'MultiTodId is missing or null in the request', 400, null);
                 reject(apiResponse);
             }
@@ -477,7 +477,7 @@ let completeToDoFunction = (req, res) => {
             var query = { multiToDoId: req.body.multiToDoId }
             MultiToDoModel.findOneAndUpdate(query, { isCompleted: req.body.isCompleted }, (err, result) => {
                 if (err) {
-                    logger.error(err.message, 'multiToDoController: editToDoItemTitleFunction()=>findAndUpdateData', 10);
+                    logger.error(err.message, 'multiToDoController: findAndUpdateData', 10);
                     let apiResponse = response.generate(true, 'erro while getting data- ' + err.message, 400, null);
                     reject(apiResponse);
                 } else {

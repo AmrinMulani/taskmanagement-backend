@@ -358,11 +358,11 @@ let getAllFriend = (req, res) => {
         .select('friends')
         .exec((err, result) => {
             if (err) {
-                logger.error(err.message, 'Friend Controller: getAllRequestRecieved', 10)
+                logger.error(err.message, 'FriendsController: getAllRequestRecieved', 10)
                 let apiResponse = response.generate(true, 'Failed To Find Friend', 500, null)
                 res.send(apiResponse)
             } else if (check.isEmpty(result.friends)) {
-                logger.info('NO Friend Found', 'Friend Controller: getAllRequestRecieved')
+                logger.info('NO Friend Found', 'FriendsController: getAllRequestRecieved')
                 let apiResponse = response.generate(true, 'There is no Friend ', 400, null)
                 res.send(apiResponse)
             } else {
@@ -380,11 +380,11 @@ let getAllUserD = (req, res) => {
         .exec((err, result) => {
 
             if (err) {
-                logger.error(err.message, 'Friend Controller: getAllRequestSent', 10)
+                logger.error(err.message, 'FriendsController: getAllRequestSent', 10)
                 let apiResponse = response.generate(true, 'Failed To Find Sent Requests', 500, null)
                 res.send(apiResponse)
             } else if (check.isEmpty(result)) {
-                logger.info('No Sent Request Found', 'Friend Controller=> getAllRequestSent')
+                logger.info('No Sent Request Found', 'FriendsController=> getAllRequestSent')
                 let apiResponse = response.generate(true, 'No Sent Request Found', 404, null)
                 res.send(apiResponse)
             } else {
@@ -421,11 +421,11 @@ let getAllUserD = (req, res) => {
                         .lean()
                         .exec((err, result) => {
                             if (err) {
-                                logger.error(err.message, 'Friend Controller: getAllRequestSent', 10)
+                                logger.error(err.message, 'FriendsController: getAllRequestSent', 10)
                                 let apiResponse = response.generate(true, 'Failed To User ', 500, null)
                                 res.send(apiResponse)
                             } else if (check.isEmpty(result)) {
-                                logger.info('No Sent Request Found', 'Friend Controller=> getAllRequestSent')
+                                logger.info('No Sent Request Found', 'FriendsController=> getAllRequestSent')
                                 let apiResponse = response.generate(true, 'No user Found', 404, null)
                                 res.send(apiResponse)
                             } else {
